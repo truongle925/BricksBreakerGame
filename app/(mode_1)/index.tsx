@@ -408,6 +408,7 @@ const mode_1 = () => {
         switch (buttonKey) {
             case "btnResume":
                 setPauseGame(false);
+                gameEngine.start();
                 break;
             case "btnRestart":
                 setRestartGame(true);
@@ -427,6 +428,7 @@ const mode_1 = () => {
                 break;
             case "btnPause":
                 setPauseGame(true);
+                gameEngine.stop();
                 break;
             default:
                 break;
