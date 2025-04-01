@@ -1,6 +1,8 @@
 import Matter from "matter-js";
 import React, {useRef} from "react";
 import {nextLevel} from "@/utils/NextLevel";
+import {playSound} from "@/utils/PlaySound";
+import {Sound_Ball_Tap} from "@/constants/Sound";
 
 
 export const useCollisionHandler = () => {
@@ -33,6 +35,7 @@ export const useCollisionHandler = () => {
                 const brick = bricksRef.current[brickIndex];
                 if (brick) {
                     brick.hitCount -= 1;
+                    playSound(Sound_Ball_Tap)
                     setScore(prevScore => prevScore + 5);
                     if (brick.hitCount <= 0) {
                         Matter.World.remove(world, brick.body);

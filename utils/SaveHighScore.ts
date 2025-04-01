@@ -1,7 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-// Hàm lưu điểm mới vào danh sách
+/**
+ * Hàm lưu điểm vào storage
+ * @param newScore - Điểm mới
+ * @param keyItem - Item key cần lưu storage
+ */
 export const saveHighScore = async (newScore,keyItem) => {
     try {
         // Lấy danh sách điểm cao từ AsyncStorage
@@ -15,7 +19,7 @@ export const saveHighScore = async (newScore,keyItem) => {
         highScores.sort((a, b) => b - a);
 
         // Giữ lại tối đa 10 điểm cao nhất
-        highScores = highScores.slice(0, 10);
+        highScores = highScores.slice(0, 5);
 
         // Lưu lại vào AsyncStorage
         await AsyncStorage.setItem(keyItem, JSON.stringify(highScores));
@@ -24,6 +28,10 @@ export const saveHighScore = async (newScore,keyItem) => {
     }
 };
 
+/**
+ * Hàm lấy điểm
+ * @param keyItem
+ */
 export const getHighScores = async (keyItem) => {
     try {
         const storedScores = await AsyncStorage.getItem(keyItem);
@@ -34,6 +42,10 @@ export const getHighScores = async (keyItem) => {
     }
 };
 
+/**
+ * Hàm xóa điểm trong storage
+ * @param keyItem
+ */
 export const clearHighScores = async (keyItem) => {
     try {
         await AsyncStorage.removeItem(keyItem);

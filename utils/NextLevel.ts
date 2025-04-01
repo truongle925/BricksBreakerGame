@@ -1,7 +1,7 @@
 import React from "react";
 
 /**
- *
+ * Hàm chueyern level
  * @param setCurrentLevel - Cài đặt level
  * @param levels - Danh sách thiết lập các level cho trò chơi
  * @param isLevelChanging - Biến trạng thái check chuyển level

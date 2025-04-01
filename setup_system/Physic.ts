@@ -1,5 +1,12 @@
 import Matter from "matter-js";
 
+/**
+ * Hàm set up vật lys custom theo entities
+ * @param width - Chiều rộng màn hình
+ * @param height - Chiều cao màn hình
+ * @param startPosition - Vị trí bắt đầu spawn entities
+ * @param mode - Chế độ game
+ */
 const createPhysics = (width: number, height: number, startPosition, mode) => {
     return (entities: any, { time }: any) => {
         let engine = entities.physics.engine;
@@ -44,7 +51,7 @@ const createPhysics = (width: number, height: number, startPosition, mode) => {
                 }
             }
             if (key.startsWith("paddle")) {
-                console.log(startPosition)
+                //console.log(startPosition)
                 let paddle = entities[key]?.body;
                 if (!paddle) return;
                 Matter.Body.setPosition(paddle, { x: startPosition == 0 ? paddle.position.x : startPosition.x, y: startPosition == 0 ? paddle.position.y  : startPosition.y  });

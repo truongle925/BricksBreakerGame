@@ -21,6 +21,9 @@ import {ChangingLevel} from "@/components/ChangingLevel";
 import {GameOver} from "@/components/GameOver";
 import CreatePaddle from "@/setup_system/CreatePaddle";
 import Paddle from "@/components/Paddle";
+import {playSound} from "@/utils/PlaySound";
+import {Sound_Ball_Tap, Sound_Level_Completed, Sound_Level_Failed} from "@/constants/Sound";
+import {saveHighScore} from "@/utils/SaveHighScore";
 
 const distanceHeaderFooter = distanceHeaderAndFooter
 const width  = Dimensions.get("window").width;
@@ -80,6 +83,7 @@ const mode_2 = () => {
 
     //#region Khởi tạo thực thể cho trò chơi
     useEffect(() => {
+        //console.log(isFirstMove.current);
         ballCountRef.current = 0
         setCountBalls(numBalls)
 
@@ -120,7 +124,8 @@ const mode_2 = () => {
             y:ballsRef.current[0].position.y,
         }
         setStartPosition(posBall);
-
+        //console.log(startPosition);
+        //console.log(paddle.position,'padđle');
         setPaddleObject({
             paddle: {body: paddleRef.current, renderer: Paddle },
         })
@@ -171,6 +176,9 @@ const mode_2 = () => {
     //#region Hàm xử lý chuyển level
     useEffect(() => {
        // console.log(oldLevelRef.current,currentLevel,'levelprevious');
+        if(currentLevel === 0){
+            setScore(0)
+        }
         if(oldLevelRef.current < currentLevel){
            setNumBalls(prev => prev + 2);
         }
@@ -181,6 +189,9 @@ const mode_2 = () => {
         oldLevelRef.current = currentLevel;
         isFirstMove.current = true
         setShowChangingLevel(true); // Hiển thị khi level thay đổi
+        if(currentLevel != 0){
+            playSound(Sound_Level_Completed)
+        }
         const timer = setTimeout(() => setShowChangingLevel(false), 2000);
         return () => clearTimeout(timer); // Xóa timer khi component unmount
     }, [currentLevel]);
@@ -188,11 +199,17 @@ const mode_2 = () => {
 
     //#region Hàm xử lý logic khi bóng chạm paddle
     useEffect(() => {
+        if(stateGameOver) {
+            handleSaveScore()
+        }
         const collisionHandler = (event) => {
-            //console.log('gọi collision')
             event.pairs.forEach(({ bodyA, bodyB }) => {
                 const ball = ballsRef.current.find(b => b.id === bodyA.id || b.id === bodyB.id);
                 //console.log('Logic')
+                playSound(Sound_Ball_Tap)
+                if(bricksRef.current.length === 0){
+                    setStartPosition(0)
+                }
                 if (ball && (bodyA === paddleRef.current || bodyB === paddleRef.current )) {
                     handleBallBounce(ball);
 
@@ -204,6 +221,7 @@ const mode_2 = () => {
                         //console.log(ballsRef.current.length,ballCountRef.current)
                         if(bricksRef.current.length !=0 ){
                             if(ballCountRef.current === ballsRef.current.length){
+                                playSound(Sound_Level_Failed)
                                 setStateGameOver(true);
                             }
                     }
@@ -257,6 +275,8 @@ const mode_2 = () => {
     //#region Hàm set giá trị bound cho bóng
     const handleBallBounce = (ball) => {
         //console.log('goi bound')
+        if(isFirstMove.current) return
+
         const speed = 26; // Tốc độ mới của bóng sau khi va chạm
         const angle = Math.random() * (Math.PI / 2) - Math.PI / 4; // Phản xạ trong khoảng [-45, 45] độ
 
@@ -271,6 +291,7 @@ const mode_2 = () => {
 
     //#region Hàm set vận tốc vecto theo trục y cho lần đầu start game
     const startBallMovement = () => {
+        if(!showChangingLevel) return;
         const initialVelocity = { x: 0, y: -20 }; // Hướng bay lên
         setStartPosition(0)
         ballsRef.current.forEach((ball, index) => {
@@ -279,6 +300,13 @@ const mode_2 = () => {
             }, index * delayBetweenBalls); // Mỗi bóng sẽ bay lên cách nhau 200ms
         });
     };
+    //#endregion
+
+    //#region handle save score
+    const handleSaveScore = async () => {
+        await saveHighScore(score, 'line_breaker');
+    };
+
     //#endregion
 
     //#region Hàm xuwr lý button main menu
@@ -362,7 +390,7 @@ const mode_2 = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#000",
+        backgroundColor: "#000B22",
     },
 });
 

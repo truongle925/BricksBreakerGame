@@ -1,7 +1,7 @@
 import Matter from "matter-js";
 
 /**
- *
+ * Hàm tạo frame wall
  * @param world Đối tượng được khỏe tạo từ màn hình trò chơi
  * @param width Độ rộng màn hình
  * @param height Chiều cao màn hình

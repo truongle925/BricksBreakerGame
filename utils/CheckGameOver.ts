@@ -1,5 +1,5 @@
 /**
- *
+ * Hàm check game over cho game mode 1
  * @param bricksRef - Danh sách các viên gạch
  * @param height - Chiều cao của màn hình
  */

@@ -1,6 +1,11 @@
 import Brick from "@/components/Brick";
 import Matter from "matter-js";
 
+/**
+ * Hàm taoj gạch
+ * @param level - Mảng level được truyền vào
+ * @param world - World Game
+ */
 const createBricks = (level, world) => {
     if (!level) return [];
 

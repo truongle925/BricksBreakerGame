@@ -1,5 +1,11 @@
 import Matter from "matter-js";
 
+/**
+ * Hàm tính quỹ đạo của bóng
+ * @param startPos - Vị trí cham vào màn hình lần đầu tiên
+ * @param velocity - Vecto vận tốc
+ * @param width - Chiều rộng mn hình
+ */
 export const calculateTrajectory = (startPos: Matter.Vector, velocity: Matter.Vector, width: number) => {
     let points = [];
     let pos = { x: startPos.x, y: startPos.y + 60};

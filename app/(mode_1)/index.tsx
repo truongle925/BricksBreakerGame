@@ -23,6 +23,9 @@ import {resetListBricks} from "@/utils/ResetListBricks";
 import LevelFrame from "@/components/LevelFrame";
 import {ChangingLevel, changingLevel} from "@/components/ChangingLevel";
 import {GameOver} from "@/components/GameOver";
+import {playSound} from "@/utils/PlaySound";
+import {Sound_Ball_Tap, Sound_Button_Click, Sound_Level_Completed, Sound_Level_Failed} from "@/constants/Sound";
+import {saveHighScore} from "@/utils/SaveHighScore";
 
 const distanceHeaderFooter = distanceHeaderAndFooter
 const width  = Dimensions.get("window").width;
@@ -219,17 +222,21 @@ const mode_1 = () => {
 
     //#region Xử lý set position của gạch sau 1 turn và check game over
     useEffect(() => {
-
+        if(stateGameOver) {
+            console.log(score,'diem')
+            handleSaveScore()
+        }
         const collisionHandler = (event) => {
             if (!stateMoveBallRef.current) return;
 
             for (const pair of event.pairs) {
                 const { bodyA, bodyB } = pair;
-
+                playSound(Sound_Ball_Tap)
                 if (bodyA === wallBottom || bodyB === wallBottom) {
                     // Đếm số lượng bóng đã chạm đáy
                     ballCountRef.current += 1;
                     setCountBalls(ballCountRef.current);
+
                     //console.log("collisionHandlerrrrrrrrrrrrrrrrrrrrrrrr",ballCountRef.current);
                     if (ballCountRef.current >= ballsRef.current.length) {
                         //console.log("Tất cả bóng đã chạm đáy. Đẩy viên gạch xuống!");
@@ -245,6 +252,7 @@ const mode_1 = () => {
                         // Kiểm tra thua cuộc
                         if (checkGameOver_GameMode1(bricksRef,height)) {
                             // console.log("Trò chơi kết thúc!");
+                            playSound(Sound_Level_Failed)
                             setStateGameOver(true);
                             return;
                         }
@@ -278,7 +286,12 @@ const mode_1 = () => {
         }
         oldLevelRef.current = currentLevel;
         setShowChangingLevel(true); // Hiển thị khi level thay đổi
-        const timer = setTimeout(() => setShowChangingLevel(false), 2000);
+        if(currentLevel != 0) {
+            playSound(Sound_Level_Completed)
+        }
+        const timer = setTimeout(() => {
+            setShowChangingLevel(false)
+        }, 2000);
         return () => clearTimeout(timer); // Xóa timer khi component unmount
     }, [currentLevel]);
 
@@ -325,6 +338,13 @@ const mode_1 = () => {
             },
         })
     ).current;
+    //#endregion
+
+    //#region handle save score
+    const handleSaveScore = async () => {
+        await saveHighScore(score, 'breaker');
+    };
+
     //#endregion
 
     //#region RestartGame
@@ -484,7 +504,7 @@ const mode_1 = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#000",
+        backgroundColor: "#000B22",
     },
 });
 
