@@ -1,4 +1,5 @@
-import {View, StyleSheet} from "react-native";
+import {View, StyleSheet, Image, ImageBackground} from "react-native";
+
 
 const Paddle = (props) => {
     //console.log(props,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
@@ -8,8 +9,16 @@ const Paddle = (props) => {
 
 
     return(
-        <View style={[styles.container,{top:top,left:left}]}/>
-
+        <View style={[styles.container,{top:top,left:left}]}>
+            <Image source={require("@/assets/images/paddle.png")}  style={{ width:'100%',height:'100%'}}/>
+        </View>
+        // <ImageBackground
+        //     source={require("@/assets/images/paddle.png")} // Đổi thành đường dẫn ảnh của bạn
+        //     style={[styles.container, { top, left }]}
+        //     resizeMode="cover"
+        //     width={100}
+        //     height={10}
+        // />
     )
 }
 
@@ -19,7 +28,8 @@ const styles = StyleSheet.create({
         width: 100,
         height: 10,
         borderRadius:10,
-        backgroundColor: "blue",
+        backgroundColor: "#b9bbb0",
+
 
     }
 })

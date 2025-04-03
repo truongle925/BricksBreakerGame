@@ -26,6 +26,7 @@ import {GameOver} from "@/components/GameOver";
 import {playSound} from "@/utils/PlaySound";
 import {Sound_Ball_Tap, Sound_Button_Click, Sound_Level_Completed, Sound_Level_Failed} from "@/constants/Sound";
 import {saveHighScore} from "@/utils/SaveHighScore";
+import {useSound} from "@/hooks/SoundContext";
 
 const distanceHeaderFooter = distanceHeaderAndFooter
 const width  = Dimensions.get("window").width;
@@ -128,6 +129,7 @@ const mode_1 = () => {
     //#region Hook
     const { handleCollisionBrick } = useCollisionHandler(); // Hook custom handle logic va chạm với gạch
     const router = useRouter();
+    const soundHook = useSound();
     //#endregion
 
     //#region Cập nhật key engine
@@ -142,7 +144,7 @@ const mode_1 = () => {
         stateMoveBallRef.current = false
         ballCountRef.current = 0
         setCountBalls(numBalls)
-        console.log(numBalls,'renderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+        //console.log(numBalls,'renderrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
 
         // Kiểm tra trạng thái của state restart game
         if(restartGame){
@@ -223,7 +225,7 @@ const mode_1 = () => {
     //#region Xử lý set position của gạch sau 1 turn và check game over
     useEffect(() => {
         if(stateGameOver) {
-            console.log(score,'diem')
+            //console.log(score,'diem')
             handleSaveScore()
         }
         const collisionHandler = (event) => {
@@ -231,7 +233,7 @@ const mode_1 = () => {
 
             for (const pair of event.pairs) {
                 const { bodyA, bodyB } = pair;
-                playSound(Sound_Ball_Tap)
+                playSound(Sound_Ball_Tap,soundHook.mute)
                 if (bodyA === wallBottom || bodyB === wallBottom) {
                     // Đếm số lượng bóng đã chạm đáy
                     ballCountRef.current += 1;
@@ -252,7 +254,7 @@ const mode_1 = () => {
                         // Kiểm tra thua cuộc
                         if (checkGameOver_GameMode1(bricksRef,height)) {
                             // console.log("Trò chơi kết thúc!");
-                            playSound(Sound_Level_Failed)
+                            playSound(Sound_Level_Failed,soundHook.mute)
                             setStateGameOver(true);
                             return;
                         }
@@ -260,7 +262,7 @@ const mode_1 = () => {
                         // Reset lại biến đếm
                         ballCountRef.current = 0;
                         stateMoveBallRef.current = false;
-                        console.log("collisionHandlerrrrrrrrrrrrrrrrrrrrrrrr",ballCountRef.current);
+                        //.log("collisionHandlerrrrrrrrrrrrrrrrrrrrrrrr",ballCountRef.current);
                     }
 
                 }
@@ -283,11 +285,13 @@ const mode_1 = () => {
         else if(oldLevelRef.current >= levels.length - 1 ){
             oldLevelRef.current = 0
             setNumBalls(2)
+            setScore(0)
+            handleSaveScore()
         }
         oldLevelRef.current = currentLevel;
         setShowChangingLevel(true); // Hiển thị khi level thay đổi
         if(currentLevel != 0) {
-            playSound(Sound_Level_Completed)
+            playSound(Sound_Level_Completed,soundHook.mute)
         }
         const timer = setTimeout(() => {
             setShowChangingLevel(false)
@@ -354,7 +358,7 @@ const mode_1 = () => {
             setCurrentLevel(0);
             setScore(0);
             setCountBalls(0);
-            console.log("restartGame",stateGameOver);
+            //console.log("restartGame",stateGameOver);
     }
     //#endregion
 
@@ -423,7 +427,7 @@ const mode_1 = () => {
     //     }
     // }, [action]);
     const handleButtonPress = (buttonKey) => {
-        console.log(buttonKey);
+        //console.log(buttonKey);
 
         switch (buttonKey) {
             case "btnResume":

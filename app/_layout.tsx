@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {View, Text, Animated, Image, StyleSheet, Dimensions} from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import LoadingWave from "@/components/loading";
+import {SoundProvider} from "@/hooks/SoundContext";
 
 
 const width = Dimensions.get("window").width;
@@ -40,9 +41,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{
-    headerShown: false,
-  }}/>;
+  return  <SoundProvider>
+            <Stack screenOptions={{ headerShown: false }} />
+          </SoundProvider>
 }
 
 const styles = StyleSheet.create({

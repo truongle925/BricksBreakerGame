@@ -42,7 +42,7 @@ const createPhysics = (width: number, height: number, startPosition, mode) => {
                     }
                     else{
                         //console.log(startPosition)
-                        Matter.Body.setPosition(ball, { x: startPosition == 0 ? ball.position.x : startPosition.x, y: startPosition == 0 ? ball.position.y + 10 : startPosition.y - 10 });
+                        Matter.Body.setPosition(ball, { x: startPosition == 0 ? ball.position.x : startPosition.x, y: startPosition == 0 ? ball.position.y + 10  : startPosition.y - 10  });
                         // Matter.Body.setVelocity(ball, { x: ball.velocity.x, y: Math.abs(ball.velocity.y) });
                         Matter.Body.setVelocity(ball, { x: ball.velocity.x, y: -Math.max(Math.abs(ball.velocity.y), 2) });
                     }

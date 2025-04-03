@@ -24,6 +24,7 @@ import Paddle from "@/components/Paddle";
 import {playSound} from "@/utils/PlaySound";
 import {Sound_Ball_Tap, Sound_Level_Completed, Sound_Level_Failed} from "@/constants/Sound";
 import {saveHighScore} from "@/utils/SaveHighScore";
+import {useSound} from "@/hooks/SoundContext";
 
 const distanceHeaderFooter = distanceHeaderAndFooter
 const width  = Dimensions.get("window").width;
@@ -66,12 +67,13 @@ const mode_2 = () => {
     const {engine, world} = setUpWorld(); // Khởi taoj world nơi chứa các thực thể trong trò chơi
     const delayBetweenBalls = 100; // Độ trễ giữa mỗi quả bóng (ms)
     const {wallTop,wallRight,wallLeft,wallBottom} = createWalls(world,width,height + 40); // Khởi tạo wall frame trò chơi
-    const ballColors = ["red", "green", "yellow", "purple", "orange", "white"]; // Danh sách màu cho bóng
+    const ballColors = ["white"]; // Danh sách màu cho bóng
     //#endregion
 
     //#region Hook
     const { handleCollisionBrick } = useCollisionHandler(); // Hook custom handle logic va chạm với gạch
     const router = useRouter();
+    const soundHook = useSound();
     //#endregion
 
     //#region Cập nhật key engine
@@ -124,6 +126,7 @@ const mode_2 = () => {
             y:ballsRef.current[0].position.y,
         }
         setStartPosition(posBall);
+        //console.log(posBall)
         //console.log(startPosition);
         //console.log(paddle.position,'padđle');
         setPaddleObject({
@@ -149,7 +152,7 @@ const mode_2 = () => {
             ...((ballsRef.current && ballsRef.current.length > 0) ?
                 ballsRef.current.reduce<Record<string, any>>((acc, ball, index) => {
                     if (ball) {
-                        acc[`ball_${index}`] = { body: ball, renderer: BallCircle,color: ballColors[index] || "gray", };
+                        acc[`ball_${index}`] = { body: ball, renderer: BallCircle,color: ballColors[0], };
                     }
                     return acc;
                 }, {}) : {}),
@@ -170,29 +173,27 @@ const mode_2 = () => {
             );
         };
 
-    },[currentLevel,restartGame,stateGameOver,numBalls] );
+    },[currentLevel,restartGame,numBalls] );
     //#endregion
 
     //#region Hàm xử lý chuyển level
     useEffect(() => {
        // console.log(oldLevelRef.current,currentLevel,'levelprevious');
-        if(currentLevel === 0){
-            setScore(0)
-        }
         if(oldLevelRef.current < currentLevel){
-           setNumBalls(prev => prev + 2);
+            setNumBalls(prev => prev + 2);
         }
         else if(oldLevelRef.current >= levels.length - 1 ){
             oldLevelRef.current = 0
             setNumBalls(2)
+            setScore(0)
         }
         oldLevelRef.current = currentLevel;
         isFirstMove.current = true
         setShowChangingLevel(true); // Hiển thị khi level thay đổi
         if(currentLevel != 0){
-            playSound(Sound_Level_Completed)
+            playSound(Sound_Level_Completed,soundHook.mute)
         }
-        const timer = setTimeout(() => setShowChangingLevel(false), 2000);
+        const timer = setTimeout(() => {setShowChangingLevel(false)}, 2000);
         return () => clearTimeout(timer); // Xóa timer khi component unmount
     }, [currentLevel]);
     //#endregion
@@ -206,7 +207,7 @@ const mode_2 = () => {
             event.pairs.forEach(({ bodyA, bodyB }) => {
                 const ball = ballsRef.current.find(b => b.id === bodyA.id || b.id === bodyB.id);
                 //console.log('Logic')
-                playSound(Sound_Ball_Tap)
+                playSound(Sound_Ball_Tap,soundHook.mute)
                 if(bricksRef.current.length === 0){
                     setStartPosition(0)
                 }
@@ -221,20 +222,21 @@ const mode_2 = () => {
                         //console.log(ballsRef.current.length,ballCountRef.current)
                         if(bricksRef.current.length !=0 ){
                             if(ballCountRef.current === ballsRef.current.length){
-                                playSound(Sound_Level_Failed)
+                                playSound(Sound_Level_Failed,soundHook.mute)
                                 setStateGameOver(true);
                             }
                     }
                 }
             });
         };
-
-        Matter.Events.on(engine, "collisionStart", collisionHandler);
+        if(showChangingLevel) {
+            Matter.Events.on(engine, "collisionStart", collisionHandler);
+        }
 
         return () => {
             Matter.Events.off(engine, "collisionStart",collisionHandler);
         }
-    },[currentLevel,restartGame,stateGameOver,numBalls]);
+    },[currentLevel,restartGame,numBalls]);
     //#endregion
 
     //#region Xử lý kéo thả
@@ -262,6 +264,7 @@ const mode_2 = () => {
     //#region RestartGame
     const handleRestartGame = () => {
         setRestartGame(false);
+        setPauseGame(false);
         setStateGameOver(false);
         setCurrentLevel(0);
         setScore(0);

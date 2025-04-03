@@ -12,10 +12,15 @@ const createBall = (world:Matter.World,width: number,height: number) => {
         restitution: 1,
         friction: 0,
         frictionAir: 0.02,
+        inertia: Infinity,
         collisionFilter: {
             group: -1, // Bóng trong cùng nhóm (-1) sẽ không va chạm nhau
         },
 
+    });
+    Matter.Body.set(ball, {
+        angularVelocity: 0,
+        angularDamping: 1,
     });
     Matter.World.add(world,[ball]);
     return { ball };
@@ -29,7 +34,7 @@ const createBall = (world:Matter.World,width: number,height: number) => {
  * @param height - Chiều cao màn hình
  */
 const createListBalls = (numBalls: number, world: Matter.World, width:number, height:number) => {
-    console.log(numBalls)
+    //console.log(numBalls)
     return Array.from({ length: numBalls }, () => {
         const ballData = createBall(world, width, height);
 

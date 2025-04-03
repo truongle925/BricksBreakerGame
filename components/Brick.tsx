@@ -1,12 +1,19 @@
 import {Text, View} from "react-native";
 import {ColorsBricks} from "@/constants/ColorsBricks";
+import {useState} from "react";
 
 const Brick = ({ body, hitCount, showHitCount = false }: {body:any,hitCount:number,showHitCount:boolean}) => {
     const { position, bounds } = body;
     const width = bounds.max.x - bounds.min.x;
     const height = bounds.max.y - bounds.min.y;
-    const colorIndex = Math.min(hitCount, ColorsBricks.length - 1);
-    const brickColor = ColorsBricks[colorIndex];
+    // const colorIndex = Math.min(hitCount, ColorsBricks.length - 1);
+    // const brickColor = ColorsBricks[colorIndex];
+    //const randomIndex = Math.floor(Math.random() * ColorsBricks.length);
+    //const brickColor = ColorsBricks[randomIndex];
+    const [brickColor] = useState(() => {
+        const randomIndex = Math.floor(Math.random() * ColorsBricks.length);
+        return ColorsBricks[randomIndex];
+    });
     return (
         <View
             style={{
@@ -15,9 +22,9 @@ const Brick = ({ body, hitCount, showHitCount = false }: {body:any,hitCount:numb
                 top: position.y - height / 2,
                 width,
                 height,
-                backgroundColor: hitCount > 0 ? `#${brickColor.backgroundColor}` : "transparent",
+                backgroundColor: `#${brickColor.backgroundColor}`,
                 borderWidth: 2,
-                borderColor: hitCount > 0 ? `#${brickColor.borderBrick}` : "transparent",
+                borderColor: `#${brickColor.borderBrick}`,
                 borderRadius: 4,
                 justifyContent: "center",
                 alignItems: "center",

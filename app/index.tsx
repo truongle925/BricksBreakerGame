@@ -14,11 +14,13 @@ import {useRouter} from "expo-router";
 import {playSound} from "@/utils/PlaySound";
 import {Sound_Button_Click} from "@/constants/Sound";
 import {clearHighScores, getHighScores} from "@/utils/SaveHighScore";
+import {SoundProvider, useSound} from "@/hooks/SoundContext";
 
 
 const Index = ()=> {
     const translateY = useRef(new Animated.Value(0)).current;
     const [mute, setMute] = useState(false);
+    const soundHook = useSound();
     const [showHighScore, setShowHighScore] = useState(false);
     const [breakerScore,setBreakerScore] = useState<[]>([]);
     const [linebreakerScore,setLineBreakerScore] = useState<[]>([]);
@@ -43,6 +45,7 @@ const Index = ()=> {
 
     const handleSound = () => {
         setMute(!mute);
+        soundHook.toggleMute();
     }
 
     const directScreen = (mode: number) => {
@@ -66,90 +69,90 @@ const Index = ()=> {
     },[])
 
   return (
-    <View
-      style={[styles.container]}
-    >
-        <View style={[styles.viewSound]}>
-            <TouchableOpacity onPress={handleSound}>
-                {
-                    mute ?
-                        <FontAwesome name="volume-off" size={25}  color="white"/> :
-                        <FontAwesome name="volume-up" size={25}  color="white"/>
-                }
-            </TouchableOpacity>
-        </View>
-        <View style={styles.viewText}>
-            <Animated.Image source={require('@/assets/images/text_style/texthome.png')} style={{transform: [{ translateY }]}}/>
-        </View>
-        <View style={styles.containerMode}>
-            <View style={[styles.viewMode,{marginRight:60}]}>
-                <Image source={require('@/assets/images/logo/mode_1.png')} />
-                <TouchableOpacity touchSoundDisabled={true} onPress={() => {
-                    playSound(Sound_Button_Click)
-                    directScreen(1);
-                }}>
-                    <ImageBackground source={require('@/assets/images/button/startbtn.png')} style={{ width: 70, height: 70 }}/>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.viewMode}>
-                <Image source={require('@/assets/images/logo/mode_2.png')} />
-                <TouchableOpacity touchSoundDisabled={true} onPress={() => {
-                    playSound(Sound_Button_Click)
-                    directScreen(2);
+          <View
+              style={[styles.container]}
+          >
+              <View style={[styles.viewSound]}>
+                  <TouchableOpacity onPress={handleSound}>
+                      {
+                          mute ?
+                              <FontAwesome name="volume-off" size={25}  color="white"/> :
+                              <FontAwesome name="volume-up" size={25}  color="white"/>
+                      }
+                  </TouchableOpacity>
+              </View>
+              <View style={styles.viewText}>
+                  <Animated.Image source={require('@/assets/images/text_style/texthome.png')} style={{transform: [{ translateY }]}}/>
+              </View>
+              <View style={styles.containerMode}>
+                  <View style={[styles.viewMode,{marginRight:60}]}>
+                      <Image source={require('@/assets/images/logo/mode_1.png')} />
+                      <TouchableOpacity touchSoundDisabled={true} onPress={() => {
+                          playSound(Sound_Button_Click,soundHook.mute)
+                          directScreen(1);
+                      }}>
+                          <ImageBackground source={require('@/assets/images/button/startbtn.png')} style={{ width: 70, height: 70 }}/>
+                      </TouchableOpacity>
+                  </View>
+                  <View style={styles.viewMode}>
+                      <Image source={require('@/assets/images/logo/mode_2.png')} />
+                      <TouchableOpacity touchSoundDisabled={true} onPress={() => {
+                          playSound(Sound_Button_Click,soundHook.mute)
+                          directScreen(2);
 
-                }}>
-                    <ImageBackground source={require('@/assets/images/button/startbtn.png')} style={{ width: 70, height: 70 }}/>
-                </TouchableOpacity>
-            </View>
-        </View>
-        <View>
-            <TouchableOpacity style={{backgroundColor: '#FFB11F',width:150,height:50,borderRadius:20,marginHorizontal:'auto',marginTop:30}} onPress={() => {setShowHighScore(true);fetchScore('breaker','line_breaker')}} >
-                <Text style={{color:'white', fontSize:18, fontWeight:'bold',textAlign:'center',lineHeight:45}}>Hight Score</Text>
-            </TouchableOpacity>
-        </View>
-        {showHighScore && (
-            <View style={styles.viewModalContainer}>
-                <TouchableWithoutFeedback onPress={() => { setShowHighScore(false)}}>
-                    <View style={styles.viewOverlay} />
-                </TouchableWithoutFeedback>
-                <View style={styles.viewModalScore}>
-                    <View style={{marginHorizontal:'auto',marginTop:20}}>
-                        <Text style={{color:'white',fontSize:24,fontWeight:'600'}}>High Score</Text>
-                    </View>
-                    <View style={{flexDirection:'row',justifyContent:'space-between',height:'100%',marginTop:15}}>
-                        <View style={{marginHorizontal:'auto'}}>
-                            <View style={{backgroundColor:'#FFB11F',width:110,height:30,borderRadius:6}}>
-                                <Text style={{color:'white',fontWeight:'600',textAlign:'center',fontSize:14,lineHeight:28}}>Breaker</Text>
-                            </View>
+                      }}>
+                          <ImageBackground source={require('@/assets/images/button/startbtn.png')} style={{ width: 70, height: 70 }}/>
+                      </TouchableOpacity>
+                  </View>
+              </View>
+              <View>
+                  <TouchableOpacity style={{backgroundColor: '#FFB11F',width:150,height:50,borderRadius:20,marginHorizontal:'auto',marginTop:30}} onPress={() => {setShowHighScore(true);fetchScore('breaker','line_breaker')}} >
+                      <Text style={{color:'white', fontSize:18, fontWeight:'bold',textAlign:'center',lineHeight:45}}>Hight Score</Text>
+                  </TouchableOpacity>
+              </View>
+              {showHighScore && (
+                  <View style={styles.viewModalContainer}>
+                      <TouchableWithoutFeedback onPress={() => { setShowHighScore(false)}}>
+                          <View style={styles.viewOverlay} />
+                      </TouchableWithoutFeedback>
+                      <View style={styles.viewModalScore}>
+                          <View style={{marginHorizontal:'auto',marginTop:20}}>
+                              <Text style={{color:'white',fontSize:24,fontWeight:'600'}}>High Score</Text>
+                          </View>
+                          <View style={{flexDirection:'row',justifyContent:'space-between',height:'100%',marginTop:15}}>
+                              <View style={{marginHorizontal:'auto'}}>
+                                  <View style={{backgroundColor:'#FFB11F',width:110,height:30,borderRadius:6}}>
+                                      <Text style={{color:'white',fontWeight:'600',textAlign:'center',fontSize:14,lineHeight:28}}>Breaker</Text>
+                                  </View>
 
-                            {
-                                breakerScore.map((score,index) => (
-                                    <Text key={index} style={{color:'white',marginHorizontal:'auto',marginTop:12,fontSize:20}}>{score}</Text>
-                                ))
-                            }
+                                  {
+                                      breakerScore.map((score,index) => (
+                                          <Text key={index} style={{color:'white',marginHorizontal:'auto',marginTop:12,fontSize:20}}>{score}</Text>
+                                      ))
+                                  }
 
 
-                        </View>
+                              </View>
 
-                        <View style={{backgroundColor:'white',width:2,height:'70%'}}>
-                        </View>
-                        <View style={{marginHorizontal:'auto'}}>
-                            <View style={{backgroundColor:'#FFB11F',width:110,height:30,borderRadius:6}}>
-                                <Text style={{color:'white',fontWeight:'600',textAlign:'center',fontSize:14,lineHeight:28}}>Line Breaker</Text>
-                            </View>
+                              <View style={{backgroundColor:'white',width:2,height:'70%'}}>
+                              </View>
+                              <View style={{marginHorizontal:'auto'}}>
+                                  <View style={{backgroundColor:'#FFB11F',width:110,height:30,borderRadius:6}}>
+                                      <Text style={{color:'white',fontWeight:'600',textAlign:'center',fontSize:14,lineHeight:28}}>Line Breaker</Text>
+                                  </View>
 
-                            {
-                                linebreakerScore.map((score,index) => (
-                                    <Text key={index} style={{color:'white',marginHorizontal:'auto',marginTop:12,fontSize:20}}>{score}</Text>
-                                ))
-                            }
-                        </View>
-                    </View>
-                </View>
-            </View>
-        )}
+                                  {
+                                      linebreakerScore.map((score,index) => (
+                                          <Text key={index} style={{color:'white',marginHorizontal:'auto',marginTop:12,fontSize:20}}>{score}</Text>
+                                      ))
+                                  }
+                              </View>
+                          </View>
+                      </View>
+                  </View>
+              )}
 
-    </View>
+          </View>
   );
 }
 
